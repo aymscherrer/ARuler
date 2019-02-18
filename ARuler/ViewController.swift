@@ -14,6 +14,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     
+    private var dotNotes = [SCNNode]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,7 +42,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.pause()
     }
     
-    //MARK: - Touch Methods
+    //MARK: - Touch Method
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touchLocation = touches.first?.location(in: sceneView) {
@@ -68,5 +70,29 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         )
         
         sceneView.scene.rootNode.addChildNode(dotNode)
+        
+        dotNotes.append(dotNode)
+        
+        if dotNotes.count >= 2 {
+            calculate()
+        }
+    }
+    
+    // Calculate the distance between 2 dots
+    
+    func calculate() {
+        let start = dotNotes[0]
+        let end = dotNotes[1]
+        
+        print(start.position)
+        print(end.position)
+        
+        let distance = sqrt(
+            pow(end.position.x - start.position.x, 2) +
+            pow(end.position.y - start.position.y, 2) +
+            pow(end.position.z - start.position.z, 2)
+        )
+        
+        print(distance)
     }
 }
