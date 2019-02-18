@@ -14,7 +14,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     
-    private var dotNotes = [SCNNode]()
+    private var dotNodes = [SCNNode]()
+    private var textNode = SCNNode()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,6 +46,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     //MARK: - Touch Method
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        // Check if there are 2 dots on the screen and delete if so
+        if dotNodes.count >= 2 {
+            for dot in dotNodes {
+                dot.removeFromParentNode()
+            }
+            dotNodes = [SCNNode]()
+        }
+        
         if let touchLocation = touches.first?.location(in: sceneView) {
             let hitTestResults = sceneView.hitTest(touchLocation, types: .featurePoint)
             
@@ -71,18 +81,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         sceneView.scene.rootNode.addChildNode(dotNode)
         
-        dotNotes.append(dotNode)
+        dotNodes.append(dotNode)
         
-        if dotNotes.count >= 2 {
+        if dotNodes.count >= 2 {
             calculate()
         }
     }
     
-    // Calculate the distance between 2 dots
+    // MARK: - Calculate the distance between 2 dots
     
     func calculate() {
-        let start = dotNotes[0]
-        let end = dotNotes[1]
+        let start = dotNodes[0]
+        let end = dotNodes[1]
 
         let distance = sqrt(
             pow(end.position.x - start.position.x, 2) +
@@ -93,10 +103,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         updateText(text: "\(distance)", atPosition: end.position)
     }
     
+    // MARK: - Show text on the screen
+    
     func updateText(text: String, atPosition position: SCNVector3) {
         
+        // Clear the previous text
+        textNode.removeFromParentNode()
+        
         let textGeometry = SCNText(string: text, extrusionDepth: 1.0)
-        let textNode = SCNNode(geometry: textGeometry)
+        
+        textNode = SCNNode(geometry: textGeometry)
 
         textGeometry.firstMaterial?.diffuse.contents = UIColor.red
         
