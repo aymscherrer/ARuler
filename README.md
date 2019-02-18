@@ -1,4 +1,4 @@
-# TwitterMenti
+# ARuler
 
 This application uses a virtual ruler using ARKit to mesure a distance between 2 points and shows to the user the distance value.
 
